@@ -1,4 +1,4 @@
-# The efficient way of Autoscaling your Workload in Kubernetes
+# The ServiceMesh workshop
 This repository contains all the files for the workshop around ServiceMesh
 
 This repository showcase the usage of several serviceMesh feature with Dynatrace:
