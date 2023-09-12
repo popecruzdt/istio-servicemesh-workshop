@@ -23,7 +23,7 @@ spec:
             '@type': type.googleapis.com/udpa.type.v1.TypedStruct
             type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
             value:
-              stat_prefix: http_local_rate_limiter
+              stat_prefix: istio_rate
               token_bucket:
                 max_tokens: 400
                 tokens_per_fill: 900

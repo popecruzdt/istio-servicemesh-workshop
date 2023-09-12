@@ -146,7 +146,7 @@ annotations:
 As a consequence we could Graph the number request that has been rate limit 
 <p align="center"><img src="/image/rate_limit_metric.png" width="40%" alt="data token" /></p>
 
-With the metric `envoy_http_local_rate_limiter_http_local_rate_limit_rate_limited.count` you can then imagine to create alerts once the value is above A or 10.
+With the metric `istio_rate_http_local_rate_limit_rate_limited.count` you can then imagine to create alerts once the value is above A or 10.
 
 #### 3. Circuit Breaker
 Let's create a circuit breaker rule on the productcatalog service.
