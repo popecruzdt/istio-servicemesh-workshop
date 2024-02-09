@@ -404,6 +404,23 @@ spec:
       targetPort: 8080
       appProtocol: http
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-loadbalancer
+  labels:
+    dt.owner: hipster-shop
+spec:
+  type: LoadBalancer
+  selector:
+    app: hipster-shop
+    service: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      appProtocol: http
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
