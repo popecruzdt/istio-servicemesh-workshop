@@ -8,6 +8,7 @@ spec:
   mode: daemonset
   serviceAccount: otelcontribcol
   image: otel/opentelemetry-collector-contrib:0.77.0
+  #image: otel/opentelemetry-collector-contrib:0.77.0
   ports:
   - name: prometheus
     port: 9090
@@ -169,7 +170,7 @@ spec:
       pipelines:
         traces:
           receivers: [opencensus,otlp]
-          processors: [memory_limiter,k8sattributes,batch]
+          processors: [memory_limiter,k8sattributes,attributes,batch]
           exporters: [otlphttp]
         metrics:
           receivers: [otlp,prometheus]
