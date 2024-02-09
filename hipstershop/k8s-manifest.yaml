@@ -445,7 +445,7 @@ spec:
               args: [ "-u", "70", "-d", "59m" ]
               env:
                 - name: FRONTEND_ADDR
-                  value: "hipstershop.34.141.108.250.nip.io"
+                  value: "frontend"
                 - name: K6_DYNATRACE_URL
                   valueFrom:
                     secretKeyRef:
