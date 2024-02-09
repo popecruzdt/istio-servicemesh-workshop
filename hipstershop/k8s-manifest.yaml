@@ -34,7 +34,6 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
-
     spec:
       terminationGracePeriodSeconds: 5
       containers:
@@ -48,10 +47,12 @@ spec:
             - name: DISABLE_PROFILER
               value: "1"
           readinessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           livenessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
@@ -78,6 +79,7 @@ spec:
     - name: grpc
       port: 5000
       targetPort: 8080
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -115,7 +117,6 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
-
     spec:
       containers:
         - name: server
@@ -123,9 +124,11 @@ spec:
           ports:
             - containerPort: 5050
           readinessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5050"]
           livenessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5050"]
           env:
@@ -143,12 +146,12 @@ spec:
               value: "currencyservice:7000"
             - name: CART_SERVICE_ADDR
               value: "cartservice:7070"
-          # - name: DISABLE_STATS
-          #   value: "1"
-          # - name: DISABLE_TRACING
-          #   value: "1"
-          # - name: DISABLE_PROFILER
-          #   value: "1"
+          #  - name: DISABLE_STATS
+          #    value: "1"
+          #  - name: DISABLE_TRACING
+          #    value: "1"
+          #  - name: DISABLE_PROFILER
+          #    value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
           resources:
@@ -174,6 +177,7 @@ spec:
     - name: grpc
       port: 5050
       targetPort: 5050
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -211,7 +215,6 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
-
     spec:
       terminationGracePeriodSeconds: 5
       # imagePullsecrets required for perform2019????
@@ -224,9 +227,11 @@ spec:
             - containerPort: 8080
           readinessProbe:
             periodSeconds: 5
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           livenessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
@@ -235,12 +240,12 @@ spec:
               value: "8080"
             - name: PRODUCT_CATALOG_SERVICE_ADDR
               value: "productcatalogservice:3550"
-          # - name: DISABLE_TRACING
-          #   value: "1"
-          # - name: DISABLE_PROFILER
-          #   value: "1"
-          # - name: DISABLE_DEBUGGER
-          #   value: "1"
+          #  - name: DISABLE_TRACING
+          #    value: "1"
+          #  - name: DISABLE_PROFILER
+          #    value: "1"
+          #  - name: DISABLE_DEBUGGER
+          #    value: "1"
           resources:
             requests:
               cpu: 100m
@@ -264,6 +269,7 @@ spec:
     - name: grpc
       port: 8080
       targetPort: 8080
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -314,6 +320,7 @@ spec:
             - containerPort: 8080
           readinessProbe:
             initialDelaySeconds: 10
+            timeoutSeconds: 5
             httpGet:
               path: "/_healthz"
               port: 8080
@@ -322,6 +329,7 @@ spec:
                   value: "shop_session-id=x-readiness-probe"
           livenessProbe:
             initialDelaySeconds: 10
+            timeoutSeconds: 5
             httpGet:
               path: "/_healthz"
               port: 8080
@@ -347,10 +355,10 @@ spec:
               value: "adservice:9555"
             - name: ENV_PLATFORM
               value: "gcp"
-          # - name: DISABLE_TRACING
-          #   value: "1"
-          # - name: DISABLE_PROFILER
-          #   value: "1"
+            - name: DISABLE_TRACING
+              value: "1"
+            - name: DISABLE_PROFILER
+              value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
           resources:
@@ -376,6 +384,7 @@ spec:
     - name: http
       port: 80
       targetPort: 8080
+      appProtocol: http
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -418,7 +427,7 @@ spec:
               args: [ "-u", "70", "-d", "59m" ]
               env:
                 - name: FRONTEND_ADDR
-                  value: "frontend"
+                  value: "hipstershop.34.141.108.250.nip.io"
                 - name: K6_DYNATRACE_URL
                   valueFrom:
                     secretKeyRef:
@@ -472,6 +481,7 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
+
     spec:
       terminationGracePeriodSeconds: 5
       containers:
@@ -485,9 +495,11 @@ spec:
             - name: MEMORYLEAK
               value: "0"
           readinessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
           livenessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
           resources:
@@ -513,6 +525,7 @@ spec:
     - name: grpc
       port: 50051
       targetPort: 50051
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -547,6 +560,7 @@ spec:
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
 
+
     spec:
       terminationGracePeriodSeconds: 5
       containers:
@@ -560,18 +574,20 @@ spec:
               value: "3550"
             - name: EXTRA_LATENCY
               value: "1s"
-          # - name: DISABLE_STATS
-          #   value: "1"
-          # - name: DISABLE_TRACING
-          #   value: "1"
-          # - name: DISABLE_PROFILER
-          #   value: "1"
+            - name: DISABLE_STATS
+              value: "1"
+            - name: DISABLE_TRACING
+              value: "1"
+            - name: DISABLE_PROFILER
+              value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
           readinessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:3550"]
           livenessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:3550"]
           resources:
@@ -597,6 +613,7 @@ spec:
     - name: grpc
       port: 3550
       targetPort: 3550
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -656,10 +673,12 @@ spec:
               memory: 1024Mi
           readinessProbe:
             initialDelaySeconds: 15
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
           livenessProbe:
             initialDelaySeconds: 15
+            timeoutSeconds: 5
             periodSeconds: 10
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
@@ -679,6 +698,7 @@ spec:
     - name: grpc
       port: 7070
       targetPort: 7070
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -714,6 +734,7 @@ spec:
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
 
+
     spec:
       terminationGracePeriodSeconds: 5
       containers:
@@ -725,16 +746,18 @@ spec:
           env:
             - name: PORT
               value: "7000"
-          # - name: DISABLE_TRACING
-          #   value: "1"
-          # - name: DISABLE_PROFILER
-          #   value: "1"
-          # - name: DISABLE_DEBUGGER
-          #   value: "1"
+            - name: DISABLE_TRACING
+              value: "1"
+            - name: DISABLE_PROFILER
+              value: "1"
+            - name: DISABLE_DEBUGGER
+              value: "1"
           readinessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:7000"]
           livenessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:7000"]
           resources:
@@ -760,6 +783,7 @@ spec:
     - name: grpc
       port: 7000
       targetPort: 7000
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -813,10 +837,12 @@ spec:
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
           readinessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
           livenessProbe:
+            timeoutSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
           resources:
@@ -842,6 +868,7 @@ spec:
     - name: grpc
       port: 50051
       targetPort: 50051
+      appProtocol: grpc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -877,6 +904,7 @@ spec:
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
 
+
     spec:
       containers:
         - name: redis
@@ -884,10 +912,12 @@ spec:
           ports:
             - containerPort: 6379
           readinessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             tcpSocket:
               port: 6379
           livenessProbe:
+            timeoutSeconds: 5
             periodSeconds: 5
             tcpSocket:
               port: 6379
@@ -929,6 +959,7 @@ spec:
     - name: redis
       port: 6379
       targetPort: 6379
+      appProtocol: tcp
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -982,11 +1013,13 @@ spec:
               cpu: 200m
               memory: 400Mi
           readinessProbe:
+            timeoutSeconds: 5
             initialDelaySeconds: 20
             periodSeconds: 15
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:9555"]
           livenessProbe:
+            timeoutSeconds: 5
             initialDelaySeconds: 20
             periodSeconds: 15
             exec:
@@ -1007,3 +1040,4 @@ spec:
     - name: grpc
       port: 9555
       targetPort: 9555
+      appProtocol: grpc
