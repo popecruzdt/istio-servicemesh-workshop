@@ -226,13 +226,13 @@ spec:
           ports:
             - containerPort: 8080
           readinessProbe:
-            periodSeconds: 5
-            timeoutSeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           livenessProbe:
-            timeoutSeconds: 5
-            periodSeconds: 5
+            timeoutSeconds: 10
+            periodSeconds: 10
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           env:
