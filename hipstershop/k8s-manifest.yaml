@@ -215,7 +215,7 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: "true"
     spec:
       terminationGracePeriodSeconds: 5
       # imagePullsecrets required for perform2019????
@@ -227,13 +227,15 @@ spec:
           ports:
             - containerPort: 8080
           readinessProbe:
-            periodSeconds: 10
-            timeoutSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 15
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           livenessProbe:
-            timeoutSeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 15
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
           env:
