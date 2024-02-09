@@ -215,7 +215,10 @@ spec:
         metrics.dynatrace.com/port: '15020'
         metrics.dynatrace.com/scrape: 'true'
         metrics.dynatrace.com/path: '/stats/prometheus'
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: "true"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: '15'
+        readiness.status.sidecar.istio.io/periodSeconds: '30'
+        readiness.status.sidecar.istio.io/failureThreshold: '3'
     spec:
       terminationGracePeriodSeconds: 5
       # imagePullsecrets required for perform2019????
