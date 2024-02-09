@@ -151,6 +151,9 @@ spec:
           - key: service.name
             from_attribute: istio.canonical_service
             action: insert
+          - key: tpc_demo
+            value: service_mesh
+            action: insert
 
 
     exporters:
