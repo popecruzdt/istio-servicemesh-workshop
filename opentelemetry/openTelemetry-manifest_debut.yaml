@@ -158,6 +158,9 @@ spec:
           - key: rpc.service
             from_attribute: istio.canonical_service
             action: insert
+          - key: span.kind
+            value: server
+            action: upsert
 
 
     exporters:
