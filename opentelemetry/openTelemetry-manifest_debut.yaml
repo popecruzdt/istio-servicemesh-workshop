@@ -155,6 +155,9 @@ spec:
           - key: tpc_demo
             value: service_mesh
             action: insert
+          - key: rpc.service
+            from_attribute: istio.canonical_service
+            action: insert
 
 
     exporters:
