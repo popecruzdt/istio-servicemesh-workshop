@@ -10,11 +10,11 @@ spec:
       - destination:
           host: productcatalogservice
           subset: v1
-        weight: 80
+        weight: 100
       - destination:
           host: productcatalogservice
           subset: v2
-        weight: 20
+        weight: 0
       timeout: 2s
 ---
 apiVersion: networking.istio.io/v1alpha3
