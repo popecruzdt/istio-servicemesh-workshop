@@ -411,7 +411,7 @@ metadata:
   labels:
     dt.owner: hipster-shop
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: hipster-shop
     service: frontend
