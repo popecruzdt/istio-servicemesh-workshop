@@ -155,7 +155,7 @@ spec:
       
       span:
         name:
-          from_attributes: ["istio.canonical_service","OperationName"
+          from_attributes: ["istio.canonical_service","OperationName"]
           separator: "::"
 
     exporters:
