@@ -152,6 +152,11 @@ spec:
           - key: service.name
             from_attribute: istio.canonical_service
             action: insert
+      
+      span:
+        name:
+          from_attributes: ["istio.canonical_service","OperationName"
+          separator: "::"
 
     exporters:
       logging:
@@ -166,7 +171,7 @@ spec:
       pipelines:
         traces:
           receivers: [opencensus,otlp]
-          processors: [memory_limiter,k8sattributes,attributes,batch]
+          processors: [memory_limiter,k8sattributes,span,attributes,batch]
           exporters: [otlphttp]
         metrics:
           receivers: [otlp,prometheus]
