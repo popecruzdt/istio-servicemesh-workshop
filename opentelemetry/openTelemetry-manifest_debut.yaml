@@ -179,4 +179,5 @@ spec:
           exporters: [otlphttp]
         logs:
           receivers: [otlp]
+          processors: [batch]
           exporters: [otlphttp]
