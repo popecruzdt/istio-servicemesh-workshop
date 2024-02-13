@@ -28,7 +28,7 @@ cloudprofiler.googleapis.com \
 ```
 ### 2.Create a GKE cluster
 ```shell
-ZONE=europe-west3-a
+ZONE=us-central1-c
 NAME=servicemesh-workshop
 gcloud container clusters create ${NAME} --zone=${ZONE} --machine-type=e2-standard-8 --num-nodes=2
 ```
@@ -50,7 +50,7 @@ export PATH=$PWD/bin:$PATH
 
 ### 4.Clone Github repo
 ```shell
-git clone https://github.com/henrikrexed/servicemesh-workshop
+git clone https://github.com/popecruzdt/istio-servicemesh-workshop
 cd servicemesh-workshop
 ```
 
@@ -111,9 +111,9 @@ chmod 777 deployment.sh
 The productcatalog service is responding in around 1s, but with load the response time can heavily increase.
 Let's protect all the other services relying on the product catalog by defining a request timeout rule.
 ```shell
-kubectl apply -f istio/request_timeout.yaml -n hipster-shop
+kubectl apply -f istio/request_timeout_productcatalog.yaml -n hipster-shop
 ```
-let's run a load test
+let's run a load test (it will start at the :00 minute mark)
 ```shell
 kubectl apply -f k6/loadtest_job.yaml -n hipster-shop
 ```
@@ -123,12 +123,16 @@ so the impact is that the frontend should generate an error due to the missing p
 <p align="center"><img src="/image/timeout.png" width="40%" alt="data token" /></p>
 
 #### 2. Rate Limit
-To illustrate the usage of the rate limit we won't apply it on the productcatalog service , because it receives a limited workload.
-Therefore we would apply it on the frontend service taking in peak hours 550 requests. 
-The rate limit will only accept 400 requests.
+We can rate limit the productcatalog service to 300 requests per minute. 
 ```shell
-kubectl apply -f istio/rate_limit.yaml
+kubectl apply -f istio/rate_limit_productcatalog.yaml
 ```
+
+We can also rate limit the frontend service to 400 requests per minute.
+```shell
+kubectl apply -f istio/rate_limit_frontend.yaml
+```
+
 Once applied , we shoud get the following page , once the frontend gets heavy traffic: 
 <p align="center"><img src="/image/ratelimit_front.png" width="40%" alt="data token" /></p>
 
@@ -143,26 +147,30 @@ annotations:
         - ".*http_local_rate_limit.*"
 ```
 
-As a consequence we could Graph the number request that has been rate limit 
+As a consequence we could graph the number request that has been rate limit 
 <p align="center"><img src="/image/rate_limit_metric.png" width="40%" alt="data token" /></p>
 
-With the metric `istio_rate_http_local_rate_limit_rate_limited.count` you can then imagine to create alerts once the value is above A or 10.
+With the metric `istio_rate_http_local_rate_limit_rate_limited.count` you can then imagine to create alerts once the value is above a threshold.
 
 #### 3. Circuit Breaker
 Let's create a circuit breaker rule on the productcatalog service.
 
 ```shell
-kubectl apply -f istio/circuit_Break.yaml
+kubectl apply -f istio/circuit_breaker_productcatalog.yaml
 ```
 To keep track on all the potential issues related to the circuit break rule created, we need to keep track on the following metric:
 `upstream_rq_pending_overflow`
 
 #### 4. Traffic Split
-let's deploy the v1.1.0 resolving the latency issue on the productcatalog service
+let's deploy the v1.1.0 (v2) version and resolve the latency issue on the productcatalog service
 ```shell
 kubectl apply -f hipstershop/productcatalog_v2.yaml -n hipster-shop
 ```
-Then we want to create the traffic split rule where 80% of the traffic will be sent to the v1.0 and 20% to v1.1
+Then we want to create the traffic split rule where 80% of the traffic will be sent to the v1.0 and 20% to v1.1.  This will be our canary release strategy.
 ```shell
-kubectl apply -f istio/traficsplit.yaml -n hipster-shop
+kubectl apply -f istio/traffic_split_productcatalog_canary.yaml -n hipster-shop
+```
+After verifying the new version is performing faster than the old version, change the traffic routing to send 100% of the traffic to the new version.
+```shell
+kubectl apply -f istio/traffic_split_productcatalog_v2.yaml -n hipster-shop
 ```

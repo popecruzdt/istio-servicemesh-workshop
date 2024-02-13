@@ -103,6 +103,9 @@ echo 'Found external IP: '$IP
 sed -i "s,IP_TO_REPLACE,$IP," istio/istio_gateway.yaml
 ### Update the ip of the ip adress for the ingres
 #TODO to update this part to create the various Gateway rules
+sed -i "s,IP_TO_REPLACE,$IP," hipstershop/loadgenerator-ingress.yaml
+### Update the ip of the ip adress for the ingres
+#TODO to update this part to create the various Gateway rules
 sed -i "s,IP_TO_REPLACE,$IP," k6/loadtest_job.yaml
 
 
@@ -117,22 +120,21 @@ sed -i "s,CLUSTER_NAME_TO_REPLACE,$CLUSTERNAME,"  dynatrace/dynakube.yaml
 kubectl apply -f dynatrace/dynakube.yaml -n dynatrace
 
 # Deploy collector
-kubectl create secret generic dynatrace  --from-literal=dynatrace_oltp_url="$DTURL" --from-literal=dt_api_token="$DTTOKEN"
+kubectl create secret generic dynatrace -n default --from-literal=dynatrace_oltp_url="$DTURL" --from-literal=dt_api_token="$DTTOKEN"
 kubectl apply -f opentelemetry/rbac.yaml
-kubectl apply -f opentelemetry/openTelemetry-manifest_debut.yaml
+kubectl apply -f opentelemetry/openTelemetry-collector-logs.yaml
 
 #deploy demo application
 kubectl create ns hipster-shop
 kubectl label namespace hipster-shop istio-injection=enabled
 kubectl create secret generic dynatrace  --from-literal=dynatrace_oltp_url="$DTURL" --from-literal=dt_api_token="$DTTOKEN" -n hipster-shop
 kubectl apply -f hipstershop/k8s-manifest.yaml -n hipster-shop
+
 #Deploy the ingress rules
 kubectl apply -f istio/istio_gateway.yaml
 
-
-kubectl apply -f k6/loadtest_job.yaml -n hipster-shop
-
-
+#deploy loadgenerator against ingress (instead of frontend directly)
+kubectl apply -f hipstershop/loadgenerator-ingress.yaml -n hipster-shop
 
 
 
